@@ -275,7 +275,76 @@ export const NEIGHBORHOOD_COORDINATES: Record<string, { lat: number; lng: number
   'xaxim': { lat: -25.5089, lng: -49.2689 },
   'novo mundo': { lat: -25.4889, lng: -49.2889 },
   'tarumã': { lat: -25.4289, lng: -49.2289 },
-  'taruma': { lat: -25.4289, lng: -49.2289 }
+  'taruma': { lat: -25.4289, lng: -49.2289 },
+
+  // Regional Matriz
+  'ahú': { lat: -25.4050, lng: -49.2600 },
+  'ahu': { lat: -25.4050, lng: -49.2600 },
+  'centro cívico': { lat: -25.4150, lng: -49.2700 },
+  'centro civico': { lat: -25.4150, lng: -49.2700 },
+  'cristo rei': { lat: -25.4180, lng: -49.2500 },
+  'hugo lange': { lat: -25.4100, lng: -49.2500 },
+  'jardim social': { lat: -25.3980, lng: -49.2470 },
+  'prado velho': { lat: -25.4490, lng: -49.2600 },
+
+  // Regional Boa Vista
+  'abranches': { lat: -25.3700, lng: -49.2550 },
+  'atuba': { lat: -25.3650, lng: -49.2100 },
+  'bacacheri': { lat: -25.3930, lng: -49.2420 },
+  'barreirinha': { lat: -25.3830, lng: -49.2280 },
+  'pilarzinho': { lat: -25.3930, lng: -49.2870 },
+  'são lourenço': { lat: -25.3750, lng: -49.2350 },
+  'sao lourenco': { lat: -25.3750, lng: -49.2350 },
+  'taboão': { lat: -25.3600, lng: -49.2450 },
+  'taboao': { lat: -25.3600, lng: -49.2450 },
+  'tingui': { lat: -25.3860, lng: -49.2620 },
+
+  // Regional Boqueirão
+  'alto boqueirão': { lat: -25.5350, lng: -49.2280 },
+  'alto boqueirao': { lat: -25.5350, lng: -49.2280 },
+
+  // Regional Cajuru
+  'guabirotuba': { lat: -25.4650, lng: -49.2440 },
+  'jardim das américas': { lat: -25.4520, lng: -49.2330 },
+  'jardim das americas': { lat: -25.4520, lng: -49.2330 },
+  'uberaba': { lat: -25.4750, lng: -49.2150 },
+
+  // Regional CIC
+  'augusta': { lat: -25.4950, lng: -49.3550 },
+  'riviera': { lat: -25.5150, lng: -49.3600 },
+  'são miguel': { lat: -25.5250, lng: -49.3450 },
+  'sao miguel': { lat: -25.5250, lng: -49.3450 },
+
+  // Regional Fazendinha/Portão
+  'fazendinha': { lat: -25.4750, lng: -49.3150 },
+  'parolin': { lat: -25.4600, lng: -49.2830 },
+  'seminário': { lat: -25.4550, lng: -49.2700 },
+  'seminario': { lat: -25.4550, lng: -49.2700 },
+  'vila izabel': { lat: -25.4600, lng: -49.2750 },
+
+  // Regional Pinheirinho
+  'fanny': { lat: -25.5030, lng: -49.2830 },
+  'lindóia': { lat: -25.4950, lng: -49.2870 },
+  'lindoia': { lat: -25.4950, lng: -49.2870 },
+
+  // Regional Santa Felicidade
+  'butiatuvinha': { lat: -25.3980, lng: -49.3650 },
+  'campina do siqueira': { lat: -25.4280, lng: -49.3100 },
+  'campo comprido': { lat: -25.4550, lng: -49.3450 },
+  'cascatinha': { lat: -25.3850, lng: -49.3200 },
+  'lamenha pequena': { lat: -25.3600, lng: -49.3750 },
+  'orleans': { lat: -25.4100, lng: -49.3450 },
+  'santo inácio': { lat: -25.4650, lng: -49.3500 },
+  'santo inacio': { lat: -25.4650, lng: -49.3500 },
+  'são braz': { lat: -25.3900, lng: -49.3200 },
+  'sao braz': { lat: -25.3900, lng: -49.3200 },
+  'são joão': { lat: -25.4050, lng: -49.3500 },
+  'sao joao': { lat: -25.4050, lng: -49.3500 },
+  'vista alegre': { lat: -25.4180, lng: -49.3050 },
+
+  // Regional Bairro Novo
+  'campo de santana': { lat: -25.5700, lng: -49.2550 },
+  'ganchinho': { lat: -25.5950, lng: -49.2450 }
 };
 
 export function resolveLocationCoordinates(cityName: string, neighborhoodName: string): { lat: number; lng: number } {
@@ -283,10 +352,24 @@ export function resolveLocationCoordinates(cityName: string, neighborhoodName: s
   const normBairro = (neighborhoodName || '').toLowerCase().trim();
 
   if (normCity.includes('curitiba') || normCity === '') {
-    for (const [key, coords] of Object.entries(NEIGHBORHOOD_COORDINATES)) {
+    // 1. Exact match first (most reliable)
+    if (Object.prototype.hasOwnProperty.call(NEIGHBORHOOD_COORDINATES, normBairro)) {
+      return NEIGHBORHOOD_COORDINATES[normBairro];
+    }
+
+    // 2. Partial match fallback: pick the LONGEST matching key so that
+    //    specific neighborhoods (e.g. "centro cívico", "alto boqueirão")
+    //    are never shadowed by shorter, unrelated keys (e.g. "centro", "boqueirão").
+    let bestKey: string | null = null;
+    for (const key of Object.keys(NEIGHBORHOOD_COORDINATES)) {
       if (normBairro.includes(key) || key.includes(normBairro)) {
-        return coords;
+        if (!bestKey || key.length > bestKey.length) {
+          bestKey = key;
+        }
       }
+    }
+    if (bestKey) {
+      return NEIGHBORHOOD_COORDINATES[bestKey];
     }
   }
 
