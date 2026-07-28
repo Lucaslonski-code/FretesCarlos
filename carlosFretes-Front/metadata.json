@@ -1,0 +1,6 @@
+{
+  "name": "Carlos Fretes",
+  "description": "Orçamento rápido de fretes e pequenas mudanças em Curitiba e Região com o Carlos. Atendimento direto e sem burocracia.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
