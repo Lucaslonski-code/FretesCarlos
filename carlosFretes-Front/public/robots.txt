@@ -1,0 +1,8 @@
+# robots.txt — Carlos Fretes
+# Permite indexação completa do site por todos os robôs de busca.
+
+User-agent: *
+Allow: /
+
+# Placeholder: ajustar o domínio quando o site estiver em produção
+Sitemap: https://www.carlosfretes.com.br/sitemap.xml

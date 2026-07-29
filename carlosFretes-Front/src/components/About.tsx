@@ -20,9 +20,9 @@ export const About: React.FC = () => {
               <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400 block mb-1">
                 Profissional de Confiança
               </span>
-              <h3 className="font-extrabold text-2xl sm:text-3xl text-white mb-1.5 tracking-tight">
+              <p className="font-extrabold text-2xl sm:text-3xl text-white mb-1.5 tracking-tight">
                 {DRIVER_PROFILE.name}
-              </h3>
+              </p>
               <p className="text-xs text-gray-400 font-semibold mb-8">
                 {DRIVER_PROFILE.role}
               </p>

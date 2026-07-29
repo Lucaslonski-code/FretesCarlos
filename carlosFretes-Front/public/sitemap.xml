@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  sitemap.xml — Carlos Fretes
+  Placeholder: as URLs abaixo usam o domínio https://www.carlosfretes.com.br
+  Ajustar para o domínio final assim que o site for publicado.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url>
+    <loc>https://www.carlosfretes.com.br/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!--
+    Estrutura pronta para futuras páginas do site.
+    Basta descomentar e ajustar <loc> quando novas páginas forem criadas, por exemplo:
+
+    <url>
+      <loc>https://www.carlosfretes.com.br/servicos</loc>
+      <changefreq>monthly</changefreq>
+      <priority>0.8</priority>
+    </url>
+
+    <url>
+      <loc>https://www.carlosfretes.com.br/area-de-atendimento</loc>
+      <changefreq>monthly</changefreq>
+      <priority>0.8</priority>
+    </url>
+
+    <url>
+      <loc>https://www.carlosfretes.com.br/faq</loc>
+      <changefreq>monthly</changefreq>
+      <priority>0.6</priority>
+    </url>
+  -->
+
+</urlset>
