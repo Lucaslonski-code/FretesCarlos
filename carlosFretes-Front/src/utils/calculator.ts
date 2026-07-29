@@ -99,17 +99,24 @@ export function calculateFreightEstimate(form: SimulationForm): CalculationResul
 
   const distanceKm = calculateHaversineKm(originLat, originLng, destLat, destLng);
 
-  // 2. Exact Business Logic Components
-  const basePrice = CONFIG.BASE_PRICE; // R$ 220,00 base
-  const distancePrice = calculateTieredKmPrice(distanceKm);
-  const moveTypePrice = CONFIG.MOVE_TYPE_PRICES[form.moveType] ?? 0;
-  const extraHelpersPrice = CONFIG.EXTRA_HELPERS_PRICES[form.extraHelpers] ?? 0;
-  const accessOriginPrice = CONFIG.ACCESS_PRICES[form.accessOrigin] ?? 0;
-  const accessDestinationPrice = CONFIG.ACCESS_PRICES[form.accessDestination] ?? 0;
+  // Regra de negócio: "Mais de uma viagem" NUNCA tem preço calculado automaticamente.
+  // Nesse caso o motorista precisa avaliar diretamente pelo WhatsApp.
+  const requiresManualQuote = form.moveType === 'multi_trip';
+
+  // 2. Exact Business Logic Components (só calculados quando NÃO é multi_trip)
+  const basePrice = requiresManualQuote ? 0 : CONFIG.BASE_PRICE; // R$ 220,00 base
+  const distancePrice = requiresManualQuote ? 0 : calculateTieredKmPrice(distanceKm);
+  const moveTypePrice = requiresManualQuote ? 0 : (CONFIG.MOVE_TYPE_PRICES[form.moveType] ?? 0);
+  const extraHelpersPrice = requiresManualQuote ? 0 : (CONFIG.EXTRA_HELPERS_PRICES[form.extraHelpers] ?? 0);
+  const accessOriginPrice = requiresManualQuote ? 0 : (CONFIG.ACCESS_PRICES[form.accessOrigin] ?? 0);
+  const accessDestinationPrice = requiresManualQuote ? 0 : (CONFIG.ACCESS_PRICES[form.accessDestination] ?? 0);
 
   // 3. Formula: Base (R$ 220,00) + progressive KM + moveType (-40 if quick) + extraHelpers + accessOrigin + accessDestination
-  const calculatedTotal = basePrice + distancePrice + moveTypePrice + extraHelpersPrice + accessOriginPrice + accessDestinationPrice;
-  const totalPrice = Math.max(0, Math.round(calculatedTotal));
+  let totalPrice: number | null = null;
+  if (!requiresManualQuote) {
+    const calculatedTotal = basePrice + distancePrice + moveTypePrice + extraHelpersPrice + accessOriginPrice + accessDestinationPrice;
+    totalPrice = Math.max(0, Math.round(calculatedTotal));
+  }
 
   // Labels for WhatsApp text
   const moveTypeLabels: Record<string, string> = {
@@ -124,6 +131,12 @@ export function calculateFreightEstimate(form: SimulationForm): CalculationResul
     two: '2 Ajudantes Adicionais'
   };
 
+  const accessLabels: Record<string, string> = {
+    ground: 'Casa / Térreo / Acesso fácil',
+    elevator: 'Prédio com elevador',
+    stairs: 'Prédio sem elevador'
+  };
+
   const textLines = [
     `🚚 *SOLICITAÇÃO DE ESTIMATIVA DE FRETE / MUDANÇA*`,
     ``,
@@ -132,14 +145,18 @@ export function calculateFreightEstimate(form: SimulationForm): CalculationResul
     `📍 *Origem:* ${originName}`,
     `🎯 *Destino:* ${destinationName}`,
     `📦 *Tipo de Mudança:* ${moveTypeLabels[form.moveType]}`,
-    form.moveType === 'multi_trip' ? `⚠️ *Observação:* Requer avaliação do motorista por necessitar de mais de 1 viagem.` : '',
+    requiresManualQuote ? `⚠️ *Observação:* Requer avaliação direta do motorista por necessitar de mais de 1 viagem. Nenhum valor foi calculado automaticamente.` : '',
     form.cargoDescription ? `📝 *Descrição dos Itens:* ${form.cargoDescription}` : '',
     `👥 *Ajudantes:* ${extraHelpersLabels[form.extraHelpers]}`,
+    `🏠 *Acesso na Retirada:* ${accessLabels[form.accessOrigin]}`,
+    `🏁 *Acesso na Entrega:* ${accessLabels[form.accessDestination]}`,
     `📅 *Data Pretendida:* ${form.date || 'A combinar'} (${form.time || 'Horário flexível'})`,
     form.observations ? `ℹ️ *Observações:* ${form.observations}` : '',
     ``,
-    `💰 *PREVISÃO INICIAL DE VALOR: R$ ${totalPrice},00*`,
-    `_(Este valor é uma estimativa inicial sujeito a confirmação com o motorista)_`,
+    requiresManualQuote
+      ? `💬 *Este serviço precisa ser avaliado diretamente com o motorista antes de definir o valor.*`
+      : `💰 *PREVISÃO INICIAL DE VALOR: R$ ${totalPrice},00*`,
+    requiresManualQuote ? '' : `_(Este valor é uma estimativa inicial sujeito a confirmação com o motorista)_`,
     ``,
     `Aguardo seu retorno para confirmar o orçamento definitivo!`
   ].filter(line => Boolean(line) && line.trim() !== '');
@@ -155,6 +172,7 @@ export function calculateFreightEstimate(form: SimulationForm): CalculationResul
     accessOriginPrice,
     accessDestinationPrice,
     totalPrice,
+    requiresManualQuote,
     originName,
     destinationName,
     formattedWhatsAppText

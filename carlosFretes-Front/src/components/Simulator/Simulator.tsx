@@ -29,11 +29,7 @@ import {
 import { calculateFreightEstimate } from '../../utils/calculator';
 import { openWhatsApp } from '../../utils/whatsapp';
 
-interface SimulatorProps {
-  initialCategory?: string;
-}
-
-export const Simulator: React.FC<SimulatorProps> = () => {
+export const Simulator: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(1);
   
   // Form State with strict Cidade -> Bairro -> Endereço (Opcional)
@@ -130,7 +126,11 @@ export const Simulator: React.FC<SimulatorProps> = () => {
         return;
       }
       if (!form.originNeighborhood.trim()) {
-        setErrorMessage('Por favor, selecione ou digite o bairro de retirada.');
+        setErrorMessage('Por favor, selecione o bairro de retirada.');
+        return;
+      }
+      if (!originNeighborhoodsList.includes(form.originNeighborhood)) {
+        setErrorMessage('Por favor, selecione um bairro válido da lista para a retirada.');
         return;
       }
     }
@@ -142,7 +142,11 @@ export const Simulator: React.FC<SimulatorProps> = () => {
         return;
       }
       if (!form.destinationNeighborhood.trim()) {
-        setErrorMessage('Por favor, selecione ou digite o bairro de entrega.');
+        setErrorMessage('Por favor, selecione o bairro de entrega.');
+        return;
+      }
+      if (!destNeighborhoodsList.includes(form.destinationNeighborhood)) {
+        setErrorMessage('Por favor, selecione um bairro válido da lista para a entrega.');
         return;
       }
     }
@@ -184,7 +188,7 @@ export const Simulator: React.FC<SimulatorProps> = () => {
       destination: null,
       destinationCustomText: '',
       date: new Date().toISOString().split('T')[0],
-      time: '08:00',
+      time: 'Manhã',
       moveType: 'quick',
       cargoDescription: '',
       extraHelpers: 'none',
@@ -340,7 +344,6 @@ export const Simulator: React.FC<SimulatorProps> = () => {
                       value={originBairroDropdownOpen ? originBairroSearch : form.originNeighborhood}
                       onChange={(e) => {
                         setOriginBairroSearch(e.target.value);
-                        setForm(f => ({ ...f, originNeighborhood: e.target.value }));
                         setOriginBairroDropdownOpen(true);
                       }}
                       onFocus={() => {
@@ -481,7 +484,6 @@ export const Simulator: React.FC<SimulatorProps> = () => {
                       value={destBairroDropdownOpen ? destBairroSearch : form.destinationNeighborhood}
                       onChange={(e) => {
                         setDestBairroSearch(e.target.value);
-                        setForm(f => ({ ...f, destinationNeighborhood: e.target.value }));
                         setDestBairroDropdownOpen(true);
                       }}
                       onFocus={() => {
@@ -781,14 +783,16 @@ export const Simulator: React.FC<SimulatorProps> = () => {
                         const val = e.target.value;
                         if (!val) {
                           setForm(f => ({ ...f, date: '' }));
+                          setErrorMessage('');
                           return;
                         }
                         const selectedDate = new Date(val + 'T00:00:00');
                         const day = selectedDate.getDay(); // 0: Sunday
                         if (day === 0) {
-                          alert('Atenção: Não realizamos serviços aos domingos. Atendimento de Segunda a Sexta (07h30 às 18h00) e Sábados (07h30 às 16h00).');
+                          setErrorMessage('Atenção: Não realizamos serviços aos domingos. Atendimento de Segunda a Sexta (07h30 às 18h00) e Sábados (07h30 às 16h00).');
                           setForm(f => ({ ...f, date: '' }));
                         } else {
+                          setErrorMessage('');
                           setForm(f => ({ ...f, date: val }));
                         }
                       }}
@@ -862,31 +866,47 @@ export const Simulator: React.FC<SimulatorProps> = () => {
                   </div>
                   <div>
                     <h3 className="font-extrabold text-base sm:text-lg tracking-tight text-emerald-950">
-                      Estimativa Gerada com Sucesso!
+                      {result.requiresManualQuote ? 'Solicitação Registrada!' : 'Estimativa Gerada com Sucesso!'}
                     </h3>
                     <p className="text-xs text-emerald-900 mt-0.5 font-medium">
-                      Confira a previsão inicial do valor abaixo e confirme os detalhes com o Motorista no WhatsApp.
+                      {result.requiresManualQuote
+                        ? 'Confira o resumo abaixo e fale com o Motorista no WhatsApp para avaliar o serviço.'
+                        : 'Confira a previsão inicial do valor abaixo e confirme os detalhes com o Motorista no WhatsApp.'}
                     </p>
                   </div>
                 </div>
 
-                {/* 2. Previsão Inicial do Valor Estimado */}
-                <div className="bg-black text-white p-5 sm:p-6 rounded-2xl shadow-xl relative overflow-hidden text-center sm:text-left">
-                  <span className="text-xs font-extrabold text-gray-300 uppercase tracking-widest block mb-1">
-                    Previsão Inicial do Valor Estimado:
-                  </span>
-                  <div className="flex flex-col sm:flex-row sm:items-baseline gap-2 mb-2">
-                    <span className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
-                      R$ {result.totalPrice},00
+                {/* 2. Previsão Inicial do Valor Estimado (somente quando NÃO é multi_trip) OU Aviso de Avaliação Manual (multi_trip) */}
+                {result.requiresManualQuote ? (
+                  <div className="bg-black text-white p-5 sm:p-6 rounded-2xl shadow-xl relative overflow-hidden">
+                    <span className="text-xs font-extrabold text-gray-300 uppercase tracking-widest block mb-2">
+                      Avaliação Direta Necessária
                     </span>
-                    <span className="text-xs font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-3 py-1 rounded-full inline-block self-start">
-                      Estimativa Inicial
-                    </span>
+                    <p className="text-base sm:text-lg font-extrabold text-white leading-snug mb-3">
+                      Para serviços que necessitam de mais de uma viagem, é necessário conversar diretamente com o motorista para avaliar todos os detalhes do serviço.
+                    </p>
+                    <p className="text-xs text-gray-300 bg-white/10 p-3 rounded-lg border border-white/10 leading-normal font-medium">
+                      * Nenhum valor é calculado automaticamente para esse tipo de mudança. Envie os dados abaixo pelo WhatsApp para receber o orçamento.
+                    </p>
                   </div>
-                  <p className="text-xs text-gray-300 bg-white/10 p-3 rounded-lg border border-white/10 leading-normal font-medium">
-                    * Este é apenas um Valor Estimado inicial. O orçamento definitivo será confirmado diretamente com o Motorista pelo WhatsApp.
-                  </p>
-                </div>
+                ) : (
+                  <div className="bg-black text-white p-5 sm:p-6 rounded-2xl shadow-xl relative overflow-hidden text-center sm:text-left">
+                    <span className="text-xs font-extrabold text-gray-300 uppercase tracking-widest block mb-1">
+                      Previsão Inicial do Valor Estimado:
+                    </span>
+                    <div className="flex flex-col sm:flex-row sm:items-baseline gap-2 mb-2">
+                      <span className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+                        R$ {result.totalPrice},00
+                      </span>
+                      <span className="text-xs font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-3 py-1 rounded-full inline-block self-start">
+                        Estimativa Inicial
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-300 bg-white/10 p-3 rounded-lg border border-white/10 leading-normal font-medium">
+                      * Este é apenas um Valor Estimado inicial. O orçamento definitivo será confirmado diretamente com o Motorista pelo WhatsApp.
+                    </p>
+                  </div>
+                )}
 
                 {/* 3. Resumo dos Dados e Turno Escolhido */}
                 <div className="bg-white rounded-xl p-4 sm:p-5 border-2 border-gray-200 space-y-3 text-xs sm:text-sm">
@@ -936,10 +956,12 @@ export const Simulator: React.FC<SimulatorProps> = () => {
                   <AlertTriangle className="w-6 h-6 text-amber-600 shrink-0 mt-0.5" />
                   <div className="space-y-2 text-xs sm:text-sm leading-relaxed text-amber-950 font-medium">
                     <h4 className="font-extrabold text-sm sm:text-base text-amber-950">
-                      Aviso Importante sobre a Estimativa e Horário de Atendimento
+                      {result.requiresManualQuote ? 'Aviso Importante sobre a Avaliação e Horário de Atendimento' : 'Aviso Importante sobre a Estimativa e Horário de Atendimento'}
                     </h4>
                     <p>
-                      Este é apenas um Valor Estimado inicial e pode sofrer alterações conforme a análise técnica do serviço. Para confirmar o orçamento definitivo, é indispensável conversar com o Motorista pelo WhatsApp.
+                      {result.requiresManualQuote
+                        ? 'Este tipo de serviço não possui valor calculado automaticamente. Para confirmar o orçamento, é indispensável conversar com o Motorista pelo WhatsApp.'
+                        : 'Este é apenas um Valor Estimado inicial e pode sofrer alterações conforme a análise técnica do serviço. Para confirmar o orçamento definitivo, é indispensável conversar com o Motorista pelo WhatsApp.'}
                     </p>
                     <p className="pt-1.5 border-t border-amber-200/90 font-bold">
                       ⚠️ O Turno informado representa apenas sua preferência. O horário exato será combinado diretamente com o Motorista pelo WhatsApp.
@@ -947,7 +969,7 @@ export const Simulator: React.FC<SimulatorProps> = () => {
                     <p>
                       💬 Caso precise de outro horário, entre em contato diretamente com o Motorista pelo WhatsApp.
                     </p>
-                    {form.moveType === 'multi_trip' && (
+                    {result.requiresManualQuote && (
                       <div className="text-xs font-extrabold text-amber-950 pt-1.5 border-t border-amber-300 mt-1 bg-amber-100/80 p-2.5 rounded-lg">
                         ⚠️ <span className="underline">Atenção:</span> Por se tratar de uma Mudança com mais de uma viagem, uma avaliação direta com o Motorista é indispensável para definir o orçamento final.
                       </div>

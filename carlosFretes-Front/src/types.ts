@@ -45,7 +45,8 @@ export interface CalculationResult {
   extraHelpersPrice: number;
   accessOriginPrice: number;
   accessDestinationPrice: number;
-  totalPrice: number;
+  totalPrice: number | null;
+  requiresManualQuote: boolean;
   originName: string;
   destinationName: string;
   formattedWhatsAppText: string;

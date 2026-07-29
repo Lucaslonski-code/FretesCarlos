@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { Benefits } from './components/Benefits';
@@ -15,19 +14,12 @@ import { Footer } from './components/Footer';
 import { FloatingWhatsApp } from './components/FloatingWhatsApp';
 
 export default function App() {
-  const [selectedServiceId, setSelectedServiceId] = useState<string | undefined>(undefined);
-
   const handleOpenSimulator = () => {
     // Scrolls to simulator section
     const simulatorEl = document.getElementById('simulador');
     if (simulatorEl) {
       simulatorEl.scrollIntoView({ behavior: 'smooth' });
     }
-  };
-
-  const handleSelectServiceCategory = (serviceId: string) => {
-    setSelectedServiceId(serviceId);
-    handleOpenSimulator();
   };
 
   return (
@@ -49,13 +41,13 @@ export default function App() {
         <HowItWorks onOpenSimulator={handleOpenSimulator} />
 
         {/* 4. Serviços */}
-        <Services onSelectService={handleSelectServiceCategory} />
+        <Services onSelectService={handleOpenSimulator} />
 
         {/* 5. Área de atendimento */}
         <CoverageArea />
 
         {/* 6. Simulador de orçamento (Core Feature) */}
-        <Simulator key={selectedServiceId || 'default'} />
+        <Simulator />
 
         {/* 7. Sobre o profissional */}
         <About />
