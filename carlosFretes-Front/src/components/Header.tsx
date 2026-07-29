@@ -33,8 +33,6 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSimulator }) => {
     setMobileMenuOpen(false);
     if (href === '#simulador') {
       onOpenSimulator();
-      const el = document.getElementById('simulador');
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
     } else {
       const targetId = href.replace('#', '');
       const el = document.getElementById(targetId);
@@ -90,8 +88,6 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSimulator }) => {
           <button
             onClick={() => {
               onOpenSimulator();
-              const el = document.getElementById('simulador');
-              if (el) el.scrollIntoView({ behavior: 'smooth' });
             }}
             className="text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 px-4 py-2.5 rounded-full transition-all cursor-pointer border border-gray-200/60"
             id="header-simular-btn"
@@ -114,8 +110,6 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSimulator }) => {
           <button
             onClick={() => {
               onOpenSimulator();
-              const el = document.getElementById('simulador');
-              if (el) el.scrollIntoView({ behavior: 'smooth' });
             }}
             className="sm:hidden bg-black text-white text-xs font-semibold px-3 py-2 rounded-full"
             id="mobile-header-quick-btn"
@@ -162,8 +156,6 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSimulator }) => {
                 onClick={() => {
                   setMobileMenuOpen(false);
                   onOpenSimulator();
-                  const el = document.getElementById('simulador');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
                 }}
                 className="w-full bg-black hover:bg-gray-800 text-white font-semibold py-3 px-4 rounded-full text-center text-sm shadow-xs flex items-center justify-center gap-2 cursor-pointer"
               >

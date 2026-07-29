@@ -46,19 +46,25 @@ export const Footer: React.FC = () => {
               Navegação Rápida
             </h3>
             <ul className="space-y-2">
-              {['Início', 'Benefícios', 'Como Funciona', 'Serviços', 'Área Atendida', 'Simulador', 'Sobre', 'FAQ'].map((item, idx) => {
-                const slug = item.toLowerCase().replace(/ /g, '-').replace('í', 'i').replace('á', 'a');
-                return (
-                  <li key={idx}>
-                    <a
-                      href={`#${slug}`}
-                      className="hover:text-white transition-colors"
-                    >
-                      {item}
-                    </a>
-                  </li>
-                );
-              })}
+              {[
+                { label: 'Início', id: 'hero' },
+                { label: 'Benefícios', id: 'beneficios' },
+                { label: 'Como Funciona', id: 'como-funciona' },
+                { label: 'Serviços', id: 'servicos' },
+                { label: 'Área Atendida', id: 'area-atendida' },
+                { label: 'Simulador', id: 'simulador' },
+                { label: 'Sobre', id: 'sobre' },
+                { label: 'FAQ', id: 'faq' },
+              ].map((link) => (
+                <li key={link.id}>
+                  <a
+                    href={`#${link.id}`}
+                    className="hover:text-white transition-colors"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
 

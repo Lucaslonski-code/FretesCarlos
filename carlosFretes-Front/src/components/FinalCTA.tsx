@@ -30,8 +30,6 @@ export const FinalCTA: React.FC<FinalCTAProps> = ({ onOpenSimulator }) => {
           <button
             onClick={() => {
               onOpenSimulator();
-              const el = document.getElementById('simulador');
-              if (el) el.scrollIntoView({ behavior: 'smooth' });
             }}
             className="w-full sm:w-auto bg-white hover:bg-gray-100 text-black font-bold text-sm px-8 py-4 rounded-full shadow-xl transition-all cursor-pointer flex items-center justify-center gap-2.5 active:scale-98"
             id="final-cta-simulator-btn"

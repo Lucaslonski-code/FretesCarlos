@@ -15,27 +15,8 @@
   }
 }
 
-/* Custom subtle animations and micro-interactions */
-@keyframes pulse-subtle {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.85; transform: scale(1.03); }
-}
-
-.animate-pulse-subtle {
-  animation: pulse-subtle 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
 /* Custom Focus Ring for Accessibility */
 *:focus-visible {
   outline: 2px solid #171717;
   outline-offset: 2px;
-}
-
-/* Hide scrollbar for clean UI in horizontal sliders if needed */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
 }

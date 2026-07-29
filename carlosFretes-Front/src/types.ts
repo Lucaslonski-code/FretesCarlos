@@ -23,10 +23,6 @@ export interface SimulationForm {
   destinationCity: string;
   destinationNeighborhood: string;
   destinationAddress: string;
-  origin: LocationOption | null;
-  originCustomText: string;
-  destination: LocationOption | null;
-  destinationCustomText: string;
   date: string;
   time: string;
   moveType: MoveTypeOption;

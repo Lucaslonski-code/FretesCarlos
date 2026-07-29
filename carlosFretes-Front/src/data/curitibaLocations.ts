@@ -401,6 +401,3 @@ export const CURITIBA_LOCATIONS: LocationOption[] = [
   { id: 'cba-sitio-cercado', name: 'Sítio Cercado, Curitiba', zone: 'Curitiba', lat: -25.5390, lng: -49.2680, searchKeywords: 'sitio cercado curitiba' },
   { id: 'cba-ecoville', name: 'Mossunguê / Ecoville, Curitiba', zone: 'Curitiba', lat: -25.4410, lng: -49.3280, popular: true, searchKeywords: 'mossungue ecoville curitiba' }
 ];
-
-export const DEFAULT_ORIGIN = CURITIBA_LOCATIONS.find(l => l.id === 'cba-centro') || CURITIBA_LOCATIONS[0];
-export const DEFAULT_DESTINATION = CURITIBA_LOCATIONS.find(l => l.id === 'cba-batel') || CURITIBA_LOCATIONS[1];

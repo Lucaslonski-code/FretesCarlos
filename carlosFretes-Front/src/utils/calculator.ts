@@ -74,7 +74,7 @@ export function calculateFreightEstimate(form: SimulationForm): CalculationResul
   } else if (form.originCity) {
     originName = form.originCity;
   } else {
-    originName = form.originCustomText.trim() || form.origin?.name || 'Curitiba (Centro)';
+    originName = 'Curitiba (Centro)';
   }
 
   let destinationName = '';
@@ -85,17 +85,17 @@ export function calculateFreightEstimate(form: SimulationForm): CalculationResul
   } else if (form.destinationCity) {
     destinationName = form.destinationCity;
   } else {
-    destinationName = form.destinationCustomText.trim() || form.destination?.name || 'Curitiba (Batel)';
+    destinationName = 'Curitiba (Batel)';
   }
 
   // Geographic coordinates resolution
   const originCoords = resolveLocationCoordinates(form.originCity, form.originNeighborhood);
   const destCoords = resolveLocationCoordinates(form.destinationCity, form.destinationNeighborhood);
 
-  const originLat = form.origin?.lat ?? originCoords.lat;
-  const originLng = form.origin?.lng ?? originCoords.lng;
-  const destLat = form.destination?.lat ?? destCoords.lat;
-  const destLng = form.destination?.lng ?? destCoords.lng;
+  const originLat = originCoords.lat;
+  const originLng = originCoords.lng;
+  const destLat = destCoords.lat;
+  const destLng = destCoords.lng;
 
   const distanceKm = calculateHaversineKm(originLat, originLng, destLat, destLng);
 

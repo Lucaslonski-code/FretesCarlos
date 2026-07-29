@@ -36,8 +36,6 @@ export const Hero: React.FC<HeroProps> = ({ onOpenSimulator }) => {
               <button
                 onClick={() => {
                   onOpenSimulator();
-                  const el = document.getElementById('simulador');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
                 }}
                 className="bg-black text-white rounded-full py-4 px-8 font-bold text-sm sm:text-base flex items-center justify-center gap-3 hover:bg-gray-800 hover:scale-[1.01] transition-all cursor-pointer shadow-md active:scale-[0.98]"
                 id="hero-simular-cta"
@@ -101,8 +99,6 @@ export const Hero: React.FC<HeroProps> = ({ onOpenSimulator }) => {
                       readOnly
                       onClick={() => {
                         onOpenSimulator();
-                        const el = document.getElementById('simulador');
-                        if (el) el.scrollIntoView({ behavior: 'smooth' });
                       }}
                       className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3.5 pl-11 pr-4 text-sm font-medium text-gray-800 cursor-pointer hover:border-black transition-all placeholder:text-gray-400"
                       value="Selecione Bairro ou Endereço de Origem..."
@@ -123,8 +119,6 @@ export const Hero: React.FC<HeroProps> = ({ onOpenSimulator }) => {
                       readOnly
                       onClick={() => {
                         onOpenSimulator();
-                        const el = document.getElementById('simulador');
-                        if (el) el.scrollIntoView({ behavior: 'smooth' });
                       }}
                       className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3.5 pl-11 pr-4 text-sm font-medium text-gray-800 cursor-pointer hover:border-black transition-all placeholder:text-gray-400"
                       value="Selecione Bairro ou Cidade de Destino..."
@@ -135,8 +129,6 @@ export const Hero: React.FC<HeroProps> = ({ onOpenSimulator }) => {
                 <button
                   onClick={() => {
                     onOpenSimulator();
-                    const el = document.getElementById('simulador');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
                   }}
                   className="w-full bg-black text-white rounded-xl py-4 font-bold text-base flex items-center justify-center gap-2.5 hover:scale-[1.02] transition-transform active:scale-[0.98] cursor-pointer shadow-sm"
                 >

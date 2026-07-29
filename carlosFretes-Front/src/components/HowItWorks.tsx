@@ -63,8 +63,6 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onOpenSimulator }) => {
           <button
             onClick={() => {
               onOpenSimulator();
-              const el = document.getElementById('simulador');
-              if (el) el.scrollIntoView({ behavior: 'smooth' });
             }}
             className="inline-flex items-center gap-2.5 bg-white text-black hover:bg-gray-100 font-bold text-sm px-8 py-4 rounded-full transition-all cursor-pointer shadow-lg active:scale-98"
           >

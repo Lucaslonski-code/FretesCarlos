@@ -77,8 +77,6 @@ export const Services: React.FC<ServicesProps> = ({ onSelectService }) => {
                 <button
                   onClick={() => {
                     onSelectService(service.id);
-                    const el = document.getElementById('simulador');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
                   }}
                   className="w-full bg-black hover:bg-gray-800 text-white font-bold text-xs py-3.5 px-4 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-xs"
                 >
