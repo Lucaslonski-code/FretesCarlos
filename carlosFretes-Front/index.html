@@ -64,57 +64,173 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Schema.org LocalBusiness JSON-LD -->
+    <!--
+      Schema.org — JSON-LD consolidado em @graph.
+      Usar @graph com @id encadeados (em vez de vários <script> soltos e desconectados)
+      é a forma recomendada pelo Google para descrever múltiplas entidades relacionadas
+      (o mesmo negócio, o site, um serviço, o FAQ) sem gerar avisos de dados estruturados
+      duplicados/conflitantes no Search Console.
+    -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "LocalBusiness",
-      "name": "Carlos Fretes",
-      "description": "Serviço profissional de fretes, entregas rápidas e mudanças residenciais em Curitiba, Região Metropolitana e cidades próximas.",
-      "url": "https://www.carlosfretes.com.br",
-      "telephone": "+5541999999999",
-      "priceRange": "$$",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Curitiba",
-        "addressRegion": "PR",
-        "addressCountry": "BR"
-      },
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": -25.4284,
-        "longitude": -49.2733
-      },
-      "areaServed": [
-        "Curitiba",
-        "Colombo",
-        "Pinhais",
-        "São José dos Pinhais",
-        "Araucária",
-        "Campo Largo",
-        "Almirante Tamandaré",
-        "Campina Grande do Sul",
-        "Quatro Barras",
-        "Região Metropolitana de Curitiba"
-      ],
-      "openingHoursSpecification": [
+      "@graph": [
         {
-          "@type": "OpeningHoursSpecification",
-          "dayOfWeek": [
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday"
+          "@type": "LocalBusiness",
+          "@id": "https://www.carlosfretes.com.br/#localbusiness",
+          "name": "Carlos Fretes",
+          "description": "Serviço profissional de fretes, entregas rápidas e mudanças residenciais em Curitiba, Região Metropolitana e cidades próximas.",
+          "url": "https://www.carlosfretes.com.br",
+          "telephone": "+5541999999999",
+          "priceRange": "$$",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Curitiba",
+            "addressRegion": "PR",
+            "addressCountry": "BR"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": -25.4284,
+            "longitude": -49.2733
+          },
+          "areaServed": [
+            "Curitiba",
+            "Colombo",
+            "Pinhais",
+            "São José dos Pinhais",
+            "Araucária",
+            "Campo Largo",
+            "Almirante Tamandaré",
+            "Campina Grande do Sul",
+            "Quatro Barras",
+            "Região Metropolitana de Curitiba"
           ],
-          "opens": "07:30",
-          "closes": "18:00"
+          "openingHoursSpecification": [
+            {
+              "@type": "OpeningHoursSpecification",
+              "dayOfWeek": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday"
+              ],
+              "opens": "07:30",
+              "closes": "18:00"
+            },
+            {
+              "@type": "OpeningHoursSpecification",
+              "dayOfWeek": ["Saturday"],
+              "opens": "07:30",
+              "closes": "16:00"
+            }
+          ],
+          "parentOrganization": { "@id": "https://www.carlosfretes.com.br/#organization" }
         },
         {
-          "@type": "OpeningHoursSpecification",
-          "dayOfWeek": ["Saturday"],
-          "opens": "07:30",
-          "closes": "16:00"
+          "@type": "Organization",
+          "@id": "https://www.carlosfretes.com.br/#organization",
+          "name": "Carlos Fretes",
+          "url": "https://www.carlosfretes.com.br",
+          "logo": "https://www.carlosfretes.com.br/logo.png",
+          "telephone": "+5541999999999",
+          "areaServed": [
+            "Curitiba",
+            "Colombo",
+            "Pinhais",
+            "São José dos Pinhais",
+            "Araucária",
+            "Campo Largo",
+            "Almirante Tamandaré",
+            "Campina Grande do Sul",
+            "Quatro Barras",
+            "Região Metropolitana de Curitiba"
+          ],
+          "contactPoint": [
+            {
+              "@type": "ContactPoint",
+              "telephone": "+5541999999999",
+              "contactType": "customer service",
+              "areaServed": "BR",
+              "availableLanguage": ["Portuguese"]
+            }
+          ],
+          "subOrganization": { "@id": "https://www.carlosfretes.com.br/#localbusiness" }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://www.carlosfretes.com.br/#website",
+          "name": "Carlos Fretes",
+          "url": "https://www.carlosfretes.com.br",
+          "inLanguage": "pt-BR",
+          "publisher": { "@id": "https://www.carlosfretes.com.br/#organization" }
+        },
+        {
+          "@type": "Service",
+          "@id": "https://www.carlosfretes.com.br/#service",
+          "name": "Fretes e Mudanças",
+          "provider": { "@id": "https://www.carlosfretes.com.br/#organization" },
+          "areaServed": "Região Metropolitana de Curitiba",
+          "serviceType": [
+            "Serviço de Frete",
+            "Serviço de Mudança",
+            "Serviço de Transporte"
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://www.carlosfretes.com.br/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Como é calculado o valor do orçamento do frete?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "O orçamento é calculado considerando a distância entre as cidades e bairros informados, o porte da mudança, a necessidade de ajudantes e o tipo de acesso no local. A estimativa final é gerada instantaneamente no site."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "O motorista ajuda no carregamento e descarregamento?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Sim! O motorista sempre participa do serviço e auxilia no carregamento e descarregamento dos seus pertences sem custo extra além do frete regular."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Quando devo solicitar um ajudante adicional?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Se você tiver móveis muito pesados (como sofás grandes, geladeiras side-by-side, guarda-roupas pesados) ou escadas longas, vale a pena solicitar 1 ou 2 ajudantes adicionais para agilizar o serviço."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Qual é o valor mínimo do orçamento?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "O valor mínimo do orçamento é sempre de R$ 220,00, mesmo para trajetos curtos na mesma região. Esse valor garante a reserva e a mobilização inicial do veículo."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Quais são as formas de pagamento aceitas?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Aceitamos Pix, cartões de débito e crédito, além de pagamento em dinheiro no momento da entrega do serviço."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Qual a região de atendimento?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Atendemos todos os bairros de Curitiba, os 29 municípios da Região Metropolitana e viagens para o Litoral e interior."
+              }
+            }
+          ]
         }
       ]
     }
