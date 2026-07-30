@@ -1,28 +1,28 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { 
-  MapPin, 
-  Calendar, 
-  Package, 
-  Users, 
-  ArrowRight, 
-  ArrowLeft, 
-  CheckCircle2, 
-  RotateCcw, 
-  MessageSquare, 
-  Building2, 
-  Clock, 
+import React, { useState, useMemo, useEffect, useRef } from 'react';
+import {
+  MapPin,
+  Calendar,
+  Package,
+  Users,
+  ArrowRight,
+  ArrowLeft,
+  CheckCircle2,
+  RotateCcw,
+  MessageSquare,
+  Building2,
+  Clock,
   Sparkles,
   Search,
   Check,
   AlertTriangle,
   Info
 } from 'lucide-react';
-import { 
-  CITIES_LIST, 
-  getNeighborhoodsForCity 
+import {
+  CITIES_LIST,
+  getNeighborhoodsForCity
 } from '../../data/curitibaLocations';
-import { 
-  SimulationForm, 
+import {
+  SimulationForm,
   AccessDifficultyOption,
   CalculationResult
 } from '../../types';
@@ -31,7 +31,8 @@ import { openWhatsApp } from '../../utils/whatsapp';
 
 export const Simulator: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(1);
-  
+  const previousStep = useRef(currentStep);
+
   // Form State with strict Cidade -> Bairro -> Endereço (Opcional)
   const [form, setForm] = useState<SimulationForm>({
     originCity: 'Curitiba',
@@ -70,9 +71,19 @@ export const Simulator: React.FC = () => {
 
   // Auto-scroll smoothly to simulator card whenever step changes
   useEffect(() => {
+    if (previousStep.current === currentStep) {
+      return;
+    }
+
+    previousStep.current = currentStep;
+
     const simulatorEl = document.getElementById('simulador');
+
     if (simulatorEl) {
-      simulatorEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      simulatorEl.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
     }
   }, [currentStep]);
 
@@ -202,7 +213,7 @@ export const Simulator: React.FC = () => {
   return (
     <section id="simulador" className="pt-4 sm:pt-5 pb-6 sm:pb-8 bg-[#F9FAFB] border-b border-gray-100 scroll-mt-[72px]">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Section Header */}
         <div className="text-center mb-2.5">
           <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500 bg-gray-100 px-3 py-1 rounded-full inline-block mb-1.5">
@@ -218,7 +229,7 @@ export const Simulator: React.FC = () => {
 
         {/* Main Simulator Card */}
         <div className="bg-white rounded-3xl border border-gray-100 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.07)] overflow-hidden transition-all">
-          
+
           {/* Progress Header */}
           {currentStep <= 5 && (
             <div className="bg-black text-white px-5 py-3.5 sm:px-6 sm:py-4">
@@ -233,7 +244,7 @@ export const Simulator: React.FC = () => {
 
               {/* Progress Bar */}
               <div className="w-full bg-neutral-800 h-1.5 rounded-full overflow-hidden">
-                <div 
+                <div
                   className="bg-white h-full transition-all duration-300 ease-out"
                   style={{ width: `${(currentStep / 5) * 100}%` }}
                 />
@@ -243,7 +254,7 @@ export const Simulator: React.FC = () => {
 
           {/* Form Step Body */}
           <div className="p-4 sm:p-6 md:p-8">
-            
+
             {/* Error Banner */}
             {errorMessage && (
               <div className="mb-6 p-4 bg-red-50 border-2 border-red-300 text-red-900 rounded-2xl text-sm font-bold flex items-center justify-between">
@@ -271,7 +282,7 @@ export const Simulator: React.FC = () => {
                     <span>1. Em qual Cidade fica o imóvel de Retirada? *</span>
                     <span className="text-[10px] sm:text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md">Pesquisa rápida</span>
                   </label>
-                  
+
                   <div className="relative">
                     <input
                       id="origin-city-select"
@@ -299,21 +310,19 @@ export const Simulator: React.FC = () => {
                           key={c.id}
                           type="button"
                           onClick={() => {
-                            setForm(f => ({ 
-                              ...f, 
-                              originCity: c.name, 
+                            setForm(f => ({
+                              ...f,
+                              originCity: c.name,
                               originNeighborhood: getNeighborhoodsForCity(c.name)[0] || 'Centro'
                             }));
                             setOriginCityDropdownOpen(false);
                           }}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-between hover:bg-gray-100 transition-colors ${
-                            form.originCity === c.name ? 'bg-black text-white' : 'text-gray-900'
-                          }`}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-between hover:bg-gray-100 transition-colors ${form.originCity === c.name ? 'bg-black text-white' : 'text-gray-900'
+                            }`}
                         >
                           <span className="text-sm">{c.name}</span>
-                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                            form.originCity === c.name ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'
-                          }`}>
+                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${form.originCity === c.name ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'
+                            }`}>
                             {c.zone}
                           </span>
                         </button>
@@ -359,9 +368,8 @@ export const Simulator: React.FC = () => {
                             setForm(f => ({ ...f, originNeighborhood: b }));
                             setOriginBairroDropdownOpen(false);
                           }}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-between hover:bg-gray-100 transition-colors ${
-                            form.originNeighborhood === b ? 'bg-black text-white' : 'text-gray-900'
-                          }`}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-between hover:bg-gray-100 transition-colors ${form.originNeighborhood === b ? 'bg-black text-white' : 'text-gray-900'
+                            }`}
                         >
                           <span className="text-sm">{b}</span>
                           {form.originNeighborhood === b && <Check className="w-4 h-4 text-white" />}
@@ -411,7 +419,7 @@ export const Simulator: React.FC = () => {
                     <span>1. Em qual Cidade fica o imóvel de Entrega? *</span>
                     <span className="text-[10px] sm:text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md">Pesquisa rápida</span>
                   </label>
-                  
+
                   <div className="relative">
                     <input
                       id="dest-city-select"
@@ -439,21 +447,19 @@ export const Simulator: React.FC = () => {
                           key={c.id}
                           type="button"
                           onClick={() => {
-                            setForm(f => ({ 
-                              ...f, 
+                            setForm(f => ({
+                              ...f,
                               destinationCity: c.name,
                               destinationNeighborhood: getNeighborhoodsForCity(c.name)[0] || 'Centro'
                             }));
                             setDestCityDropdownOpen(false);
                           }}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-between hover:bg-gray-100 transition-colors ${
-                            form.destinationCity === c.name ? 'bg-black text-white' : 'text-gray-900'
-                          }`}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-between hover:bg-gray-100 transition-colors ${form.destinationCity === c.name ? 'bg-black text-white' : 'text-gray-900'
+                            }`}
                         >
                           <span className="text-sm">{c.name}</span>
-                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                            form.destinationCity === c.name ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'
-                          }`}>
+                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${form.destinationCity === c.name ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'
+                            }`}>
                             {c.zone}
                           </span>
                         </button>
@@ -499,9 +505,8 @@ export const Simulator: React.FC = () => {
                             setForm(f => ({ ...f, destinationNeighborhood: b }));
                             setDestBairroDropdownOpen(false);
                           }}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-between hover:bg-gray-100 transition-colors ${
-                            form.destinationNeighborhood === b ? 'bg-black text-white' : 'text-gray-900'
-                          }`}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-between hover:bg-gray-100 transition-colors ${form.destinationNeighborhood === b ? 'bg-black text-white' : 'text-gray-900'
+                            }`}
                         >
                           <span className="text-sm">{b}</span>
                           {form.destinationNeighborhood === b && <Check className="w-4 h-4 text-white" />}
@@ -550,11 +555,10 @@ export const Simulator: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setForm(f => ({ ...f, moveType: 'quick' }))}
-                    className={`p-3.5 sm:p-4 rounded-xl border-2 text-left cursor-pointer transition-all ${
-                      form.moveType === 'quick'
+                    className={`p-3.5 sm:p-4 rounded-xl border-2 text-left cursor-pointer transition-all ${form.moveType === 'quick'
                         ? 'bg-black text-white border-black shadow-md'
                         : 'bg-gray-50 text-black border-gray-200 hover:border-gray-400'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span className="font-extrabold text-sm sm:text-base">
@@ -571,11 +575,10 @@ export const Simulator: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setForm(f => ({ ...f, moveType: 'full_single' }))}
-                    className={`p-3.5 sm:p-4 rounded-xl border-2 text-left cursor-pointer transition-all ${
-                      form.moveType === 'full_single'
+                    className={`p-3.5 sm:p-4 rounded-xl border-2 text-left cursor-pointer transition-all ${form.moveType === 'full_single'
                         ? 'bg-black text-white border-black shadow-md'
                         : 'bg-gray-50 text-black border-gray-200 hover:border-gray-400'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span className="font-extrabold text-sm sm:text-base">
@@ -592,11 +595,10 @@ export const Simulator: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setForm(f => ({ ...f, moveType: 'multi_trip' }))}
-                    className={`p-3.5 sm:p-4 rounded-xl border-2 text-left cursor-pointer transition-all ${
-                      form.moveType === 'multi_trip'
+                    className={`p-3.5 sm:p-4 rounded-xl border-2 text-left cursor-pointer transition-all ${form.moveType === 'multi_trip'
                         ? 'bg-black text-white border-black shadow-md'
                         : 'bg-gray-50 text-black border-gray-200 hover:border-gray-400'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span className="font-extrabold text-sm sm:text-base">
@@ -635,7 +637,7 @@ export const Simulator: React.FC = () => {
                     <Users className="w-5 h-5 text-black shrink-0" />
                     <span>Deseja ajuda adicional de Ajudantes?</span>
                   </h3>
-                  
+
                   <div className="mt-2 p-3 bg-blue-50 border-2 border-blue-200 rounded-xl text-blue-950 text-xs sm:text-sm font-semibold flex items-center gap-2.5">
                     <Sparkles className="w-4 h-4 text-blue-600 shrink-0" />
                     <span>
@@ -649,11 +651,10 @@ export const Simulator: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setForm(f => ({ ...f, extraHelpers: 'none' }))}
-                    className={`p-3.5 sm:p-4 rounded-xl border-2 text-left cursor-pointer transition-all ${
-                      form.extraHelpers === 'none'
+                    className={`p-3.5 sm:p-4 rounded-xl border-2 text-left cursor-pointer transition-all ${form.extraHelpers === 'none'
                         ? 'bg-black text-white border-black shadow-md'
                         : 'bg-gray-50 text-black border-gray-200 hover:border-gray-400'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span className="font-extrabold text-sm sm:text-base">
@@ -670,11 +671,10 @@ export const Simulator: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setForm(f => ({ ...f, extraHelpers: 'one' }))}
-                    className={`p-3.5 sm:p-4 rounded-xl border-2 text-left cursor-pointer transition-all ${
-                      form.extraHelpers === 'one'
+                    className={`p-3.5 sm:p-4 rounded-xl border-2 text-left cursor-pointer transition-all ${form.extraHelpers === 'one'
                         ? 'bg-black text-white border-black shadow-md'
                         : 'bg-gray-50 text-black border-gray-200 hover:border-gray-400'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span className="font-extrabold text-sm sm:text-base">
@@ -691,11 +691,10 @@ export const Simulator: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setForm(f => ({ ...f, extraHelpers: 'two' }))}
-                    className={`p-3.5 sm:p-4 rounded-xl border-2 text-left cursor-pointer transition-all ${
-                      form.extraHelpers === 'two'
+                    className={`p-3.5 sm:p-4 rounded-xl border-2 text-left cursor-pointer transition-all ${form.extraHelpers === 'two'
                         ? 'bg-black text-white border-black shadow-md'
                         : 'bg-gray-50 text-black border-gray-200 hover:border-gray-400'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span className="font-extrabold text-sm sm:text-base">
@@ -850,7 +849,7 @@ export const Simulator: React.FC = () => {
             {/* STEP 6: ESTIMATIVA DO ORÇAMENTO (VALOR ESTIMADO + RESUMO + HORÁRIO + AVISOS + BOTÃO WHATSAPP) */}
             {currentStep === 6 && result && (
               <div className="space-y-4 animate-in fade-in duration-300">
-                
+
                 {/* 1. Success Banner */}
                 <div className="p-3.5 sm:p-4 bg-emerald-50 border-2 border-emerald-300 text-emerald-950 rounded-xl flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 font-extrabold text-base">
@@ -906,7 +905,7 @@ export const Simulator: React.FC = () => {
                     <span>Resumo da Solicitação e Turno Escolhido:</span>
                     <span className="text-[10px] text-gray-500 font-bold bg-gray-100 px-2 py-0.5 rounded">Confirmação</span>
                   </h4>
-                  
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-gray-800 font-medium">
                     <div>
                       <span className="font-extrabold text-black block">📍 Local de Retirada:</span>
