@@ -1,0 +1,21 @@
+// Bairros de colombo — valores temporários (200) a serem definidos manualmente.
+export const COLOMBO_PRICING: Record<string, number> = {
+  "Maracanã": 200,
+  "Guaraituba": 200,
+  "Roça Grande": 200,
+  "Alto da Cruz": 200,
+  "Campo Pequeno": 200,
+  "Osasco": 200,
+  "Mauá": 200,
+  "Centro": 200,
+  "Arruda": 200,
+  "Jardim Osasco": 200,
+  "São Gabriel": 200,
+  "Rio Verde": 200,
+  "Atuba Colombo": 200,
+  "Fátima": 200,
+  "Paloma": 200,
+  "Jardim Monza": 200,
+  "Santa Tereza": 200,
+  "Parque Embu": 200,
+};

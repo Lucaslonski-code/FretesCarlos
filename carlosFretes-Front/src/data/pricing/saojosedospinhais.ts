@@ -1,0 +1,23 @@
+// Bairros de são josé dos pinhais — valores temporários (200) a serem definidos manualmente.
+export const SAO_JOSE_DOS_PINHAIS_PRICING: Record<string, number> = {
+  "Centro": 200,
+  "Afonso Pena": 200,
+  "Boneca do Iguaçu": 200,
+  "Guatupê": 200,
+  "Borda do Campo": 200,
+  "São Pedro": 200,
+  "Costeira": 200,
+  "Parque da Fonte": 200,
+  "Cidade Jardim": 200,
+  "Pedro Moro": 200,
+  "Iná": 200,
+  "Ouro Fino": 200,
+  "Quississana": 200,
+  "Rio Pequeno": 200,
+  "Aristocrata": 200,
+  "Cristal": 200,
+  "Academia": 200,
+  "Barro Preto": 200,
+  "Roseira": 200,
+  "Contenda SJP": 200,
+};

@@ -4,8 +4,6 @@ export interface LocationOption {
   id: string;
   name: string;
   zone: ZoneType;
-  lat: number;
-  lng: number;
   popular?: boolean;
   searchKeywords?: string;
 }
@@ -34,9 +32,8 @@ export interface SimulationForm {
 }
 
 export interface CalculationResult {
-  distanceKm: number;
-  basePrice: number;
-  distancePrice: number;
+  originPrice: number;
+  destinationPrice: number;
   moveTypePrice: number;
   extraHelpersPrice: number;
   accessOriginPrice: number;

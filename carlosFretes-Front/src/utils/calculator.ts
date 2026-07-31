@@ -1,8 +1,7 @@
 import { SimulationForm, CalculationResult } from '../types';
-import { resolveLocationCoordinates } from '../data/curitibaLocations';
+import { getNeighborhoodPrice } from '../data/pricing';
 
 export const CONFIG = {
-  BASE_PRICE: 220.00, // Mandatory base price (R$ 220,00)
   MOVE_TYPE_PRICES: {
     quick: -40.00,      // Mudança rápida ou poucos itens (-R$ 40,00 aplicado internamente)
     full_single: 0.00,  // Mudança completa (até 1 caminhão cheio)
@@ -20,52 +19,8 @@ export const CONFIG = {
   }
 };
 
-/**
- * Calculates the progressive tiered price for kilometers traveled:
- * - Faixa 1 (1º ao 10º km): R$ 6,00 / km
- * - Faixa 2 (11º km em diante): R$ 5,00 / km
- */
-export function calculateTieredKmPrice(distanceKm: number): number {
-  if (distanceKm <= 0) return 0;
-
-  let totalKmPrice = 0;
-
-  // Faixa 1: do 1º ao 10º KM (R$ 6,00 / km)
-  const tier1Km = Math.min(distanceKm, 10);
-  totalKmPrice += tier1Km * 6.00;
-
-  // Faixa 2: do 11º KM em diante (R$ 5,00 / km)
-  if (distanceKm > 10) {
-    const tier2Km = distanceKm - 10;
-    totalKmPrice += tier2Km * 5.00;
-  }
-
-  return Math.round(totalKmPrice);
-}
-
-// Haversine distance calculation formula with road navigation multiplier
-function calculateHaversineKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const R = 6371; // Earth radius in km
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLon = ((lon2 - lon1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
-
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const directDistance = R * c;
-
-  // Road factor multiplier for urban and metropolitan navigation (~1.25x)
-  const roadFactor = directDistance < 5 ? 1.35 : directDistance < 20 ? 1.25 : 1.2;
-  const estimatedRoadKm = Math.max(1, directDistance * roadFactor);
-  return Math.round(estimatedRoadKm * 10) / 10;
-}
-
 export function calculateFreightEstimate(form: SimulationForm): CalculationResult {
-  // 1. Resolve Location Names and Coordinates
+  // 1. Resolve Location Display Names
   let originName = '';
   if (form.originAddress && form.originNeighborhood && form.originCity) {
     originName = `${form.originAddress}, ${form.originNeighborhood} - ${form.originCity}`;
@@ -88,33 +43,23 @@ export function calculateFreightEstimate(form: SimulationForm): CalculationResul
     destinationName = 'Curitiba (Batel)';
   }
 
-  // Geographic coordinates resolution
-  const originCoords = resolveLocationCoordinates(form.originCity, form.originNeighborhood);
-  const destCoords = resolveLocationCoordinates(form.destinationCity, form.destinationNeighborhood);
-
-  const originLat = originCoords.lat;
-  const originLng = originCoords.lng;
-  const destLat = destCoords.lat;
-  const destLng = destCoords.lng;
-
-  const distanceKm = calculateHaversineKm(originLat, originLng, destLat, destLng);
-
   // Regra de negócio: "Mais de uma viagem" NUNCA tem preço calculado automaticamente.
   // Nesse caso o motorista precisa avaliar diretamente pelo WhatsApp.
   const requiresManualQuote = form.moveType === 'multi_trip';
 
   // 2. Exact Business Logic Components (só calculados quando NÃO é multi_trip)
-  const basePrice = requiresManualQuote ? 0 : CONFIG.BASE_PRICE; // R$ 220,00 base
-  const distancePrice = requiresManualQuote ? 0 : calculateTieredKmPrice(distanceKm);
+  // Preço fixo por bairro (tabela de preços), somando origem + destino.
+  const originPrice = requiresManualQuote ? 0 : getNeighborhoodPrice(form.originCity, form.originNeighborhood);
+  const destinationPrice = requiresManualQuote ? 0 : getNeighborhoodPrice(form.destinationCity, form.destinationNeighborhood);
   const moveTypePrice = requiresManualQuote ? 0 : (CONFIG.MOVE_TYPE_PRICES[form.moveType] ?? 0);
   const extraHelpersPrice = requiresManualQuote ? 0 : (CONFIG.EXTRA_HELPERS_PRICES[form.extraHelpers] ?? 0);
   const accessOriginPrice = requiresManualQuote ? 0 : (CONFIG.ACCESS_PRICES[form.accessOrigin] ?? 0);
   const accessDestinationPrice = requiresManualQuote ? 0 : (CONFIG.ACCESS_PRICES[form.accessDestination] ?? 0);
 
-  // 3. Formula: Base (R$ 220,00) + progressive KM + moveType (-40 if quick) + extraHelpers + accessOrigin + accessDestination
+  // 3. Formula: preço do bairro de origem + preço do bairro de destino + moveType (-40 if quick) + extraHelpers + accessOrigin + accessDestination
   let totalPrice: number | null = null;
   if (!requiresManualQuote) {
-    const calculatedTotal = basePrice + distancePrice + moveTypePrice + extraHelpersPrice + accessOriginPrice + accessDestinationPrice;
+    const calculatedTotal = originPrice + destinationPrice + moveTypePrice + extraHelpersPrice + accessOriginPrice + accessDestinationPrice;
     totalPrice = Math.max(0, Math.round(calculatedTotal));
   }
 
@@ -164,9 +109,8 @@ export function calculateFreightEstimate(form: SimulationForm): CalculationResul
   const formattedWhatsAppText = encodeURIComponent(textLines.join('\n'));
 
   return {
-    distanceKm,
-    basePrice,
-    distancePrice,
+    originPrice,
+    destinationPrice,
     moveTypePrice,
     extraHelpersPrice,
     accessOriginPrice,

@@ -1,9 +1,3 @@
 
 node_modules
-build
-dist
 
-.log
-
-.env
-.env.example
